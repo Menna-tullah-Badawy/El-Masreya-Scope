@@ -1,0 +1,35 @@
+{
+  "name": "SCOPE Egypt — Full Stack",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": { "version": "20" }
+  },
+
+  "forwardPorts": [8000, 8081],
+  "portsAttributes": {
+    "8000": { "label": "API (FastAPI)", "visibility": "public", "onAutoForward": "silent" },
+    "8081": { "label": "SCOPE Website", "visibility": "public", "onAutoForward": "openPreview" }
+  },
+
+  "postCreateCommand": "bash .devcontainer/setup.sh",
+  "postAttachCommand": "bash .devcontainer/start.sh",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python"
+      }
+    }
+  },
+
+  "remoteUser": "vscode"
+}

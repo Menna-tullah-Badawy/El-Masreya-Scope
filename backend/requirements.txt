@@ -1,0 +1,21 @@
+# SCOPE Egypt — Backend dependencies
+fastapi==0.118.0
+uvicorn[standard]==0.37.0
+SQLAlchemy==2.0.43
+psycopg2-binary==2.9.10
+pydantic==2.11.9
+pydantic-settings==2.11.0
+python-jose[cryptography]==3.5.0
+bcrypt==4.3.0
+python-multipart==0.0.20
+email-validator==2.3.0
+
+# PDF / QR / Arabic shaping
+reportlab==4.4.4
+arabic-reshaper==3.0.0
+python-bidi==0.6.6
+qrcode==8.2
+pillow==11.3.0
+
+# Payments (demo mode works without keys)
+stripe==12.5.1

@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "SCOPE Egypt",
+    "slug": "scope-egypt",
+    "version": "1.0.0",
+    "orientation": "default",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "scheme": "scope",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0E7C86"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.scopeegypt.app"
+    },
+    "android": {
+      "package": "com.scopeegypt.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#0E7C86",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro",
+      "output": "single"
+    }
+  }
+}

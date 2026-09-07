@@ -1,0 +1,39 @@
+# ── Python ──────────────────────────────────
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+
+# ── Node / Expo ─────────────────────────────
+node_modules/
+.expo/
+dist/
+web-build/
+*.tsbuildinfo
+npm-debug.log*
+yarn-error.log*
+
+# ── البيئة والأسرار ─────────────────────────
+.env
+.env.local
+*.pem
+
+# ── ملفات مرفوعة وقت التشغيل ────────────────
+backend/uploads/*
+!backend/uploads/.gitkeep
+!backend/uploads/p-*.jpg
+
+# ── نظام التشغيل / المحرر ───────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# ── لوجات ───────────────────────────────────
+*.log
