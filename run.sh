@@ -79,7 +79,7 @@ sleep 4
 
 # --- الفرونت إند ---
 echo -e "${GRN}→ الموقع على البورت 8081${NC}"
-( cd "$ROOT/mobile" && npx expo start --web --port 8081 --host lan ) &
+( cd "$ROOT/mobile" && npx expo start --web --port 8081 ) &
 
 echo ""
 echo -e "${CYN}────────────────────────────────────────────${NC}"
