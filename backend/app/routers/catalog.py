@@ -112,10 +112,24 @@ def list_products(
         query = query.filter(Product.is_featured.is_(featured))
     if brand:
         query = query.filter(Product.brand.ilike(f"%{brand}%"))
-    if min_price is not None:
-        query = query.filter(or_(Product.rent_daily >= min_price, Product.sale_price >= min_price))
-    if max_price is not None:
-        query = query.filter(or_(Product.rent_daily <= max_price, Product.sale_price <= max_price))
+    # فلترة السعر — حسب وضع الإيجار/البيع (أدق من الـ OR العام)
+    if min_price is not None or max_price is not None:
+        if mode == "rent":
+            if min_price is not None:
+                query = query.filter(Product.rent_daily >= min_price)
+            if max_price is not None:
+                query = query.filter(Product.rent_daily <= max_price)
+        elif mode == "sale":
+            if min_price is not None:
+                query = query.filter(Product.sale_price >= min_price)
+            if max_price is not None:
+                query = query.filter(Product.sale_price <= max_price)
+        else:
+            # بدون تحديد وضع: نفلتر إذا أي من السعرين يقع في المدى
+            if min_price is not None:
+                query = query.filter(or_(Product.rent_daily >= min_price, Product.sale_price >= min_price))
+            if max_price is not None:
+                query = query.filter(or_(Product.rent_daily <= max_price, Product.sale_price <= max_price))
 
     if sort == "price_asc":
         query = query.order_by(Product.rent_daily.asc())

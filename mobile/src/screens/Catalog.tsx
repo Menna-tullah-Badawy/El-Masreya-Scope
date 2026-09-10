@@ -28,6 +28,8 @@ export default function CatalogScreen({ initialCategory, initialMode, initialQ }
   const [brand, setBrand] = useState<string>('');
   const [sort, setSort] = useState<string>('newest');
   const [showFilters, setShowFilters] = useState(false);
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
 
   useEffect(() => {
     (async () => {
@@ -47,14 +49,16 @@ export default function CatalogScreen({ initialCategory, initialMode, initialQ }
       setItems(await api.get<Product[]>('/api/products', {
         q: q || undefined, category: category || undefined, mode: mode || undefined,
         brand: brand || undefined, sort,
+        min_price: minPrice ? Number(minPrice) : undefined,
+        max_price: maxPrice ? Number(maxPrice) : undefined,
       }));
     } catch (e: any) { setErr(e.message); }
     finally { setLoading(false); }
-  }, [q, category, mode, brand, sort]);
+  }, [q, category, mode, brand, sort, minPrice, maxPrice]);
 
   useEffect(() => { const id = setTimeout(load, 260); return () => clearTimeout(id); }, [load]);
 
-  const activeFilters = [category, mode, brand].filter(Boolean).length;
+  const activeFilters = [category, mode, brand, minPrice, maxPrice].filter(Boolean).length;
 
   const filterControls = (
     <View style={{ gap: 14 }}>
@@ -65,6 +69,11 @@ export default function CatalogScreen({ initialCategory, initialMode, initialQ }
       <Select label={t('brand')} value={brand} placeholder={t('all')}
         onChange={(v) => setBrand(v as string)}
         options={[{ value: '', label: t('all') }, ...brands.map((b) => ({ value: b, label: b }))]} />
+      <View style={{ flexDirection: 'row', gap: 10 }}>
+        <View style={{ flex: 1 }}><Field label={lang === 'ar' ? 'أقل سعر (جنيه/يوم)' : 'Min price (EGP/day)'} value={minPrice} onChangeText={setMinPrice} placeholder="0" keyboard="numeric" /></View>
+        <View style={{ flex: 1 }}><Field label={lang === 'ar' ? 'أقصى سعر (جنيه/يوم)' : 'Max price (EGP/day)'} value={maxPrice} onChangeText={setMaxPrice} placeholder="5000" keyboard="numeric" /></View>
+      </View>
+      <Txt size={11} color={colors.muted}>{lang === 'ar' ? 'يُفلتر حسب سعر اليوم للإيجار أو سعر البيع' : 'Filters by daily rent or sale price'}</Txt>
       <Select label={t('sortBy')} value={sort} onChange={(v) => setSort(v as string)}
         options={[
           { value: 'newest', label: t('newest') },
@@ -74,7 +83,7 @@ export default function CatalogScreen({ initialCategory, initialMode, initialQ }
           { value: 'popular', label: t('popular') },
         ]} />
       <Button title={t('reset')} variant="outline" full
-        onPress={() => { setCategory(''); setBrand(''); setMode(''); setSort('newest'); setQ(''); }} />
+        onPress={() => { setCategory(''); setBrand(''); setMode(''); setSort('newest'); setQ(''); setMinPrice(''); setMaxPrice(''); }} />
     </View>
   );
 
@@ -103,32 +112,46 @@ export default function CatalogScreen({ initialCategory, initialMode, initialQ }
             ) : null}
           </Row>
           {!isPhone ? (
-            <Row gap={12} wrap>
-              <View style={{ flex: 1, minWidth: 190 }}>
-                <Select label={t('categories')} value={category} placeholder={t('all')}
-                  onChange={(v) => setCategory(v as string)}
-                  options={[{ value: '', label: t('all') },
-                  ...cats.map((c) => ({ value: c.slug, label: `${c.icon}  ${pickLang(c, 'name', lang)}` }))]} />
-              </View>
-              <View style={{ flex: 1, minWidth: 160 }}>
-                <Select label={t('brand')} value={brand} placeholder={t('all')}
-                  onChange={(v) => setBrand(v as string)}
-                  options={[{ value: '', label: t('all') }, ...brands.map((b) => ({ value: b, label: b }))]} />
-              </View>
-              <View style={{ flex: 1, minWidth: 160 }}>
-                <Select label={t('sortBy')} value={sort} onChange={(v) => setSort(v as string)}
-                  options={[
-                    { value: 'newest', label: t('newest') },
-                    { value: 'price_asc', label: t('priceAsc') },
-                    { value: 'price_desc', label: t('priceDesc') },
-                    { value: 'rating', label: t('topRated') },
-                    { value: 'popular', label: t('popular') },
-                  ]} />
-              </View>
-            </Row>
+            <>
+              <Row gap={12} wrap>
+                <View style={{ flex: 1, minWidth: 190 }}>
+                  <Select label={t('categories')} value={category} placeholder={t('all')}
+                    onChange={(v) => setCategory(v as string)}
+                    options={[{ value: '', label: t('all') },
+                    ...cats.map((c) => ({ value: c.slug, label: `${c.icon}  ${pickLang(c, 'name', lang)}` }))]} />
+                </View>
+                <View style={{ flex: 1, minWidth: 160 }}>
+                  <Select label={t('brand')} value={brand} placeholder={t('all')}
+                    onChange={(v) => setBrand(v as string)}
+                    options={[{ value: '', label: t('all') }, ...brands.map((b) => ({ value: b, label: b }))]} />
+                </View>
+                <View style={{ flex: 1, minWidth: 160 }}>
+                  <Select label={t('sortBy')} value={sort} onChange={(v) => setSort(v as string)}
+                    options={[
+                      { value: 'newest', label: t('newest') },
+                      { value: 'price_asc', label: t('priceAsc') },
+                      { value: 'price_desc', label: t('priceDesc') },
+                      { value: 'rating', label: t('topRated') },
+                      { value: 'popular', label: t('popular') },
+                    ]} />
+                </View>
+              </Row>
+              <Row gap={10} wrap>
+                <View style={{ flex: 1, minWidth: 140 }}><Field label={lang === 'ar' ? 'أقل سعر' : 'Min price'} value={minPrice} onChangeText={setMinPrice} placeholder="0" keyboard="numeric" /></View>
+                <View style={{ flex: 1, minWidth: 140 }}><Field label={lang === 'ar' ? 'أقصى سعر' : 'Max price'} value={maxPrice} onChangeText={setMaxPrice} placeholder="5000" keyboard="numeric" /></View>
+                {(minPrice || maxPrice) ? <View style={{ justifyContent: 'flex-end', paddingBottom: 4 }}><Button small variant="ghost" title="✕" onPress={() => { setMinPrice(''); setMaxPrice(''); }} /></View> : null}
+              </Row>
+            </>
           ) : null}
         </View>
       </Card>
+
+      {(minPrice || maxPrice) && !loading ? (
+        <View style={{ backgroundColor: colors.brandLight, borderWidth: 1, borderColor: colors.brand + '22', borderRadius: 10, padding: 10, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Txt size={12} color={colors.brandDark} bold="600">{lang === 'ar' ? `السعر: ${minPrice || 0} → ${maxPrice || '∞'} جنيه/يوم` : `Price: ${minPrice || 0} → ${maxPrice || '∞'} EGP/day`}</Txt>
+          <Pressable onPress={() => { setMinPrice(''); setMaxPrice(''); }}><Txt size={11} bold="700" color={colors.brand}>✕ {t('reset')}</Txt></Pressable>
+        </View>
+      ) : null}
 
       {compare.length ? (
         <Pressable onPress={() => go({ name: 'compare' })}>
