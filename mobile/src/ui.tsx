@@ -532,6 +532,38 @@ export function waLink(phone: string, text: string) {
   return `https://wa.me/${phone.replace(/\D/g, '')}?text=${encodeURIComponent(text)}`;
 }
 
+// ------------------------------- reveal (subtle fade + slide — Apple/Linear style)
+export function Reveal({ children, delay = 0, style }: { children: React.ReactNode; delay?: number; style?: ViewStyle }) {
+  const a = useRef(new Animated.Value(0)).current;
+  const [visible, setVisible] = useState(false);
+  // on web we use IntersectionObserver-like delay; on native immediate
+  useEffect(() => {
+    const id = setTimeout(() => setVisible(true), delay);
+    return () => clearTimeout(id);
+  }, [delay]);
+  useEffect(() => {
+    if (!visible) return;
+    Animated.timing(a, { toValue: 1, duration: 520, delay: 0, useNativeDriver: Platform.OS !== 'web' }).start();
+  }, [visible, a]);
+  return (
+    <Animated.View
+      style={[
+        {
+          opacity: a,
+          transform: [
+            {
+              translateY: a.interpolate({ inputRange: [0, 1], outputRange: [10, 0] }),
+            },
+          ],
+        },
+        style as any,
+      ]}
+    >
+      {children}
+    </Animated.View>
+  );
+}
+
 export const styles = StyleSheet.create({
   pageWrap: { padding: 16, gap: 16, maxWidth: 1400, width: '100%', alignSelf: 'center' },
 });

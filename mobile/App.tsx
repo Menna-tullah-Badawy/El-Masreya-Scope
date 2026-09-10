@@ -53,24 +53,30 @@ function Screen() {
   }
 }
 
-// ---------------------------------------------------------------- header
+// ---------------------------------------------------------------- header — Minimal + blur (Linear/Apple)
 function Header() {
   const { go, user, cartCount, unread, lang, setLang, route, back, canGoBack, logout, rtl } = useStore();
   const { t } = useT();
   const { isPhone, isDesktop } = useLayout();
   const isAdminArea = route.name.startsWith('admin.');
 
-  const navItems: { r: Route; label: string; icon: string }[] = [
-    { r: { name: 'home' }, label: t('home'), icon: '🏠' },
-    { r: { name: 'catalog' }, label: t('catalog'), icon: '🩺' },
-    { r: { name: 'blog' }, label: t('blog'), icon: '📰' },
-    { r: { name: 'orders' }, label: t('orders'), icon: '📦' },
+  const navItems: { r: Route; label: string }[] = [
+    { r: { name: 'home' }, label: t('home') },
+    { r: { name: 'catalog' }, label: t('catalog') },
+    { r: { name: 'blog' }, label: t('blog') },
+    { r: { name: 'orders' }, label: t('orders') },
   ];
 
   return (
-    <View style={{
-      backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: colors.border, ...shadow.sm, zIndex: 20,
-    }}>
+    <View
+      style={{
+        backgroundColor: Platform.OS === 'web' ? 'rgba(255,255,255,0.84)' : '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: colors.border,
+        zIndex: 20,
+        ...(Platform.OS === 'web' ? ({ backdropFilter: 'saturate(180%) blur(12px)' } as any) : null),
+      }}
+    >
       <View style={{
         maxWidth: 1400, width: '100%', alignSelf: 'center',
         paddingHorizontal: 14, paddingVertical: 10,
@@ -82,35 +88,49 @@ function Header() {
           </Pressable>
         ) : null}
 
-        <Pressable onPress={() => go({ name: 'home' })}>
-          <Row center gap={9}>
-            <View style={{
-              width: 36, height: 36, borderRadius: 11, backgroundColor: colors.brand,
-              alignItems: 'center', justifyContent: 'center',
-            }}>
-              <Text style={{ fontSize: 18 }}>🔬</Text>
+        <Pressable onPress={() => go({ name: 'home' })} style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+          <View
+            style={{
+              width: 30,
+              height: 30,
+              borderRadius: 8,
+              backgroundColor: colors.text,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Text style={{ fontSize: 13, color: '#fff', fontWeight: '800', letterSpacing: 0.5 }}>S</Text>
+          </View>
+          {!isPhone || !canGoBack ? (
+            <View>
+              <Txt bold="700" size={14} style={{ letterSpacing: -0.4 }}>
+                SCOPE
+              </Txt>
+              {!isPhone ? <Txt size={10} color={colors.muted} style={{ letterSpacing: 0.3, marginTop: -2 }}>{t('appTagline')}</Txt> : null}
             </View>
-            {!isPhone || !canGoBack ? (
-              <View>
-                <Txt bold="800" size={16} color={colors.brandDark}>SCOPE</Txt>
-                {!isPhone ? <Txt size={9.5} color={colors.muted}>{t('appTagline')}</Txt> : null}
-              </View>
-            ) : null}
-          </Row>
+          ) : null}
         </Pressable>
 
         {isDesktop && !isAdminArea ? (
-          <Row gap={4} style={{ marginHorizontal: 14 }}>
+          <Row gap={2} style={{ marginHorizontal: 18 }}>
             {navItems.map((n) => {
               const active = route.name === n.r.name;
               return (
-                <Pressable key={n.label} onPress={() => go(n.r)}
+                <Pressable
+                  key={n.label}
+                  onPress={() => go(n.r)}
                   style={{
-                    paddingVertical: 8, paddingHorizontal: 13, borderRadius: radius.pill,
-                    backgroundColor: active ? colors.brandLight : 'transparent',
-                  }}>
-                  <Txt size={13.5} bold={active ? '700' : '600'}
-                    color={active ? colors.brandDark : colors.sub}>{n.icon} {n.label}</Txt>
+                    paddingVertical: 7,
+                    paddingHorizontal: 12,
+                    borderRadius: 8,
+                    backgroundColor: active ? colors.surface : 'transparent',
+                    borderWidth: active ? 1 : 0,
+                    borderColor: colors.border,
+                  }}
+                >
+                  <Txt size={13} bold={active ? '600' : '500'} color={active ? colors.text : colors.sub}>
+                    {n.label}
+                  </Txt>
                 </Pressable>
               );
             })}
@@ -119,36 +139,56 @@ function Header() {
 
         <View style={{ flex: 1 }} />
 
-        <Row center gap={6}>
-          <Pressable onPress={() => setLang(lang === 'ar' ? 'en' : 'ar')}
+        <Row center gap={7}>
+          <Pressable
+            onPress={() => setLang(lang === 'ar' ? 'en' : 'ar')}
             style={{
-              paddingVertical: 6, paddingHorizontal: 11, borderRadius: radius.pill,
-              backgroundColor: colors.bg, borderWidth: 1, borderColor: colors.border,
-            }}>
-            <Txt size={12} bold="700">{lang === 'ar' ? 'EN' : 'ع'}</Txt>
+              paddingVertical: 6,
+              paddingHorizontal: 10,
+              borderRadius: 8,
+              backgroundColor: '#fff',
+              borderWidth: 1,
+              borderColor: colors.border,
+            }}
+          >
+            <Txt size={11.5} bold="600" color={colors.sub}>
+              {lang === 'ar' ? 'EN' : 'عربي'}
+            </Txt>
           </Pressable>
 
-          {!isAdminArea ? (
-            <IconBtn icon="🛒" badge={cartCount} onPress={() => go({ name: 'cart' })} />
-          ) : null}
-          {user ? <IconBtn icon="🔔" badge={unread} onPress={() => go({ name: 'notifications' })} /> : null}
+          {!isAdminArea ? <IconBtn icon="◧" badge={cartCount} onPress={() => go({ name: 'cart' })} /> : null}
+          {user ? <IconBtn icon="◎" badge={unread} onPress={() => go({ name: 'notifications' })} /> : null}
 
           {user ? (
             <Pressable onPress={() => go({ name: 'profile' })}>
-              <View style={{
-                width: 34, height: 34, borderRadius: 17, backgroundColor: colors.brand,
-                alignItems: 'center', justifyContent: 'center',
-              }}>
-                <Txt bold="800" size={14} color="#fff">{user.name?.[0]}</Txt>
+              <View
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 16,
+                  backgroundColor: colors.text,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Txt bold="600" size={12} color="#fff">
+                  {user.name?.[0]}
+                </Txt>
               </View>
             </Pressable>
           ) : (
-            <Pressable onPress={() => go({ name: 'auth' })}
+            <Pressable
+              onPress={() => go({ name: 'auth' })}
               style={{
-                backgroundColor: colors.brand, paddingVertical: 8, paddingHorizontal: 15,
-                borderRadius: radius.pill,
-              }}>
-              <Txt size={13} bold="700" color="#fff">{t('login')}</Txt>
+                backgroundColor: colors.text,
+                paddingVertical: 8,
+                paddingHorizontal: 14,
+                borderRadius: 8,
+              }}
+            >
+              <Txt size={12.5} bold="600" color="#fff">
+                {t('login')}
+              </Txt>
             </Pressable>
           )}
         </Row>
@@ -166,18 +206,36 @@ function Header() {
 
 function IconBtn({ icon, badge, onPress }: { icon: string; badge?: number; onPress: () => void }) {
   return (
-    <Pressable onPress={onPress} style={{
-      width: 34, height: 34, borderRadius: 17, backgroundColor: colors.bg,
-      alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: colors.border,
-    }}>
-      <Text style={{ fontSize: 15 }}>{icon}</Text>
+    <Pressable
+      onPress={onPress}
+      style={{
+        width: 32,
+        height: 32,
+        borderRadius: 8,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: colors.border,
+      }}
+    >
+      <Text style={{ fontSize: 13, color: colors.sub }}>{icon}</Text>
       {badge ? (
-        <View style={{
-          position: 'absolute', top: -3, right: -3, minWidth: 17, height: 17, borderRadius: 9,
-          backgroundColor: colors.danger, alignItems: 'center', justifyContent: 'center',
-          paddingHorizontal: 4, borderWidth: 1.5, borderColor: '#fff',
-        }}>
-          <Text style={{ color: '#fff', fontSize: 9.5, fontWeight: '800' }}>{badge > 99 ? '99+' : badge}</Text>
+        <View
+          style={{
+            position: 'absolute',
+            top: -4,
+            right: -4,
+            minWidth: 16,
+            height: 16,
+            borderRadius: 8,
+            backgroundColor: colors.text,
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingHorizontal: 4,
+          }}
+        >
+          <Text style={{ color: '#fff', fontSize: 9, fontWeight: '700' }}>{badge > 99 ? '99+' : badge}</Text>
         </View>
       ) : null}
     </Pressable>
