@@ -1,0 +1,12 @@
+{
+  "python.defaultInterpreterPath": "/usr/local/bin/python",
+  "python.linting.enabled": true,
+  "python.formatting.provider": "black",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "files.associations": {
+    "*.py": "python"
+  },
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "expo.enabled": true
+}

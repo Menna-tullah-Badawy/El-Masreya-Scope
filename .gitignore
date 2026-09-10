@@ -13,6 +13,7 @@ node_modules/
 .expo/
 dist/
 web-build/
+web-dist/
 *.tsbuildinfo
 npm-debug.log*
 yarn-error.log*
@@ -21,6 +22,9 @@ yarn-error.log*
 .env
 .env.local
 *.pem
+*.db
+*.sqlite
+*.sqlite3
 
 # ── ملفات مرفوعة وقت التشغيل ────────────────
 backend/uploads/*
@@ -37,3 +41,4 @@ Thumbs.db
 
 # ── لوجات ───────────────────────────────────
 *.log
+/tmp/
